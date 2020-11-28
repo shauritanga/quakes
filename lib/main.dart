@@ -29,12 +29,13 @@ class Quakes extends StatelessWidget {
       ),
       body: ListView.builder(
         itemBuilder: (BuildContext ctx, int position) {
-          var name = DateTime.fromMillisecondsSinceEpoch(
+          DateTime date = DateTime.fromMillisecondsSinceEpoch(
               _features[position]['properties']['time'],
               isUtc: false);
+          String formetted = DateFormat.yMMMMd().format(date);
           return ListTile(
             title: Text(
-              name.toString(),
+              formetted,
               style: TextStyle(
                 fontSize: 23.0,
                 color: Colors.grey[700],
