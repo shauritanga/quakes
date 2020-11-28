@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
@@ -9,7 +10,6 @@ List _features;
 void main(List<String> args) async {
   _data = await getQuakes();
   _features = _data['features'];
-  print(_features);
   runApp(
     new MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -23,51 +23,69 @@ class Quakes extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Quakes'),
-        centerTitle: true,
+        leading: Icon(Icons.menu),
+        title: Text(
+          'Quakes',
+          style:
+              GoogleFonts.roboto(fontSize: 20.0, fontWeight: FontWeight.w600),
+        ),
         backgroundColor: Colors.red,
       ),
       body: ListView.builder(
+        padding: const EdgeInsets.all(15.0),
         itemBuilder: (BuildContext ctx, int position) {
+          if (position.isOdd) return Divider();
+
+          int index = position ~/ 2;
           DateTime date = DateTime.fromMillisecondsSinceEpoch(
-              _features[position]['properties']['time'],
+              _features[index]['properties']['time'],
               isUtc: false);
-          String formetted = DateFormat.yMMMMd().format(date);
+          String formetted = DateFormat.yMMMd().format(date);
           return ListTile(
             title: Text(
               formetted,
-              style: TextStyle(
-                fontSize: 23.0,
-                color: Colors.grey[700],
-              ),
+              style: GoogleFonts.roboto(fontSize: 19.5),
             ),
-            subtitle: Text(
-              _features[position]['properties']['place'],
-              style: TextStyle(
-                fontSize: 15.0,
-                color: Colors.grey,
-              ),
-            ),
+            subtitle: Text(_features[index]['properties']['place'],
+                style: GoogleFonts.roboto(
+                  fontSize: 14.5,
+                )),
             leading: CircleAvatar(
+              radius: 25.0,
               backgroundColor: Colors.red,
-              radius: 35.0,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  _features[position]['properties']['mag'].toStringAsFixed(2),
-                  style: TextStyle(
-                    fontSize: 15.0,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+              child: Text(
+                _features[index]['properties']['mag'].toStringAsFixed(2),
+                style: GoogleFonts.roboto(
+                  fontSize: 16.5,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
+            onTap: () {
+              _showAlertDialog(context,
+                  " Earthquake of ${_features[index]['properties']['mag']} Magnitude");
+            },
           );
         },
         itemCount: _features.length,
       ),
     );
+  }
+
+  void _showAlertDialog(BuildContext context, featur) {
+    AlertDialog alert = AlertDialog(
+      title: Text('Quakes'),
+      content: Text(featur),
+      actions: [
+        FlatButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text('Ok'),
+        ),
+      ],
+    );
+    showDialog(context: context, child: alert);
   }
 }
 
